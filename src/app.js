@@ -1,6 +1,8 @@
 import express from "express";
 import mongoose from "mongoose";
 import userRoute from "../src/routes/userRoute.js";
+import { initialize } from "./services/productServices.js";
+import productRoute from "../src/routes/productRoute.js";
 
 const app = express();
 const port = 3000;
@@ -16,6 +18,10 @@ mongoose
   .catch((err) => console.log(err));
 
 app.use("/user", userRoute);
+
+app.use("/products", productRoute);
+
+initialize();
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
