@@ -5,7 +5,7 @@ export const getAllProducts = async () => {
     const products = await productModel.find();
     return products;
   } catch (error) {
-    throw new Error("Failed to fetch products");
+    throw new Error(`Failed to fetch products: ${error.message}`);
   }
 };
 

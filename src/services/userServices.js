@@ -22,7 +22,7 @@ export const register = async ({ email, name, password }) => {
       password: newUser.password,
     });
   } catch (error) {
-    throw error;
+    throw new Error(`Failed to register user: ${error.message}`);
   }
 };
 
@@ -38,7 +38,7 @@ export const login = async ({ email, password }) => {
     }
     return generateJWT({ email: user.email, password: user.password });
   } catch (e) {
-    throw e;
+    throw new Error(`Failed to login: ${e.message}`);
   }
 };
 
