@@ -43,7 +43,7 @@ export const login = async ({ email, password }) => {
 };
 
 const generateJWT = (data) => {
-  return jwt.sign(data, "5Wjk254g$K#Bh5&sz~.>EmHw%DYv/kU|", {
+  return jwt.sign(data, process.env.JWT_SECRET, {
     expiresIn: "5 days",
   });
 };

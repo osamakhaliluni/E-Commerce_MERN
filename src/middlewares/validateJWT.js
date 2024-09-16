@@ -11,24 +11,20 @@ const validateJWT = (req, res, next) => {
   if (!token) {
     return res.status(401).json({ message: "Token not provided" });
   }
-  jwt.verify(
-    token,
-    "5Wjk254g$K#Bh5&sz~.>EmHw%DYv/kU|",
-    async (err, payload) => {
-      if (err) {
-        return res.status(403).json({ message: "Invalid token" });
-      }
-      if (!payload) {
-        return res.status(401).json({ message: "User not found" });
-      }
-      const user = await userModel.findOne({ email: payload.email });
-      if (!user) {
-        return res.status(401).json({ message: "User not found" });
-      }
-      req.user = user;
-      next();
+  jwt.verify(token, process.env.JWT_SECRET, async (err, payload) => {
+    if (err) {
+      return res.status(403).json({ message: "Invalid token" });
     }
-  );
+    if (!payload) {
+      return res.status(401).json({ message: "User not found" });
+    }
+    const user = await userModel.findOne({ email: payload.email });
+    if (!user) {
+      return res.status(401).json({ message: "User not found" });
+    }
+    req.user = user;
+    next();
+  });
 };
 
 export default validateJWT;
