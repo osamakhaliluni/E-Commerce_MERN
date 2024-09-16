@@ -5,6 +5,7 @@ const cartStatusEnum = ["active", "complete"];
 const cartSchema = new Schema({
   userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
   status: { type: String, enum: cartStatusEnum, default: "active" },
+  totalPrice: { type: Number, default: 0 },
   products: [
     {
       productId: {

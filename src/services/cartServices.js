@@ -1,4 +1,5 @@
 import cartModel from "../models/cartModel.js";
+import orderModel from "../models/orderModel.js";
 import productModel from "../models/productModel.js";
 
 const createCart = async (userId) => {
@@ -23,7 +24,24 @@ export const getActiveCart = async ({ userId }) => {
   }
 };
 
-export const addProduct = async ({ userId, productId, quantity, price }) => {
+export const clearCart = async ({ userId }) => {
+  try {
+    const cart = await getActiveCart({ userId });
+    cart.products = [];
+    cart.totalPrice = 0;
+    cart.save();
+    return cart;
+  } catch (err) {
+    throw new Error(`Failed to clear Cart: ${err.message}`);
+  }
+};
+
+export const addProductToCart = async ({
+  userId,
+  productId,
+  quantity,
+  price,
+}) => {
   try {
     const cart = await getActiveCart({ userId });
     var product = await productModel.findOne({ _id: productId });
@@ -41,6 +59,8 @@ export const addProduct = async ({ userId, productId, quantity, price }) => {
       quantity,
       price: price ? price : product.price,
     });
+    cart.totalPrice += price * quantity;
+
     await cart.save();
     return cart;
   } catch (err) {
@@ -48,7 +68,12 @@ export const addProduct = async ({ userId, productId, quantity, price }) => {
   }
 };
 
-export const updateProduct = async ({ userId, productId, price, quantity }) => {
+export const updateProductInCart = async ({
+  userId,
+  productId,
+  price,
+  quantity,
+}) => {
   try {
     const cart = await getActiveCart({ userId });
     const product = await productModel.findOne({ _id: productId });
@@ -69,7 +94,9 @@ export const updateProduct = async ({ userId, productId, price, quantity }) => {
       throw new Error("Not enough stock");
     }
 
-    // Update product details
+    cart.totalPrice -=
+      cart.products[productIndex].price * cart.products[productIndex].quantity;
+
     cart.products[productIndex].quantity = quantity
       ? quantity
       : cart.products[productIndex].quantity;
@@ -77,9 +104,99 @@ export const updateProduct = async ({ userId, productId, price, quantity }) => {
       ? price
       : cart.products[productIndex].price;
 
+    cart.totalPrice +=
+      cart.products[productIndex].price * cart.products[productIndex].quantity;
+
     await cart.save();
     return cart;
   } catch (e) {
     throw new Error(`Failed to update product in the cart: ${e.message}`);
+  }
+};
+
+export const deleteProductInCart = async ({ productId, userId }) => {
+  try {
+    const cart = await getActiveCart({ userId });
+    const productIndex = cart.products.findIndex(
+      (p) => p.productId.toString() === productId.toString()
+    );
+    if (productIndex === -1) {
+      throw new Error("Product not found in the cart");
+    }
+    cart.totalPrice -=
+      cart.products[productIndex].price * cart.products[productIndex].quantity;
+
+    cart.products.splice(productIndex, 1);
+    await cart.save();
+    return cart;
+  } catch (e) {
+    throw new Error(`Failed to delete product from the cart: ${e.message}`);
+  }
+};
+
+export const checkout = async ({ userId, address }) => {
+  try {
+    if (!address) {
+      throw new Error("Address is required");
+    }
+
+    const cart = await getActiveCart({ userId });
+    if (cart.products.length === 0) {
+      throw new Error("Cart is empty");
+    }
+
+    for (const product of cart.products) {
+      const productInStock = await productModel.findOne({
+        _id: product.productId,
+      });
+      if (!productInStock) {
+        throw new Error(`Product with ID ${product.productId} not found`);
+      }
+      if (productInStock.quantity < product.quantity) {
+        throw new Error(
+          `Not enough stock for product: ${productInStock.title}`
+        );
+      }
+    }
+
+    for (const product of cart.products) {
+      await productModel.findByIdAndUpdate(
+        product.productId,
+        { $inc: { quantity: -product.quantity } },
+        { new: true }
+      );
+    }
+
+    const productList = await Promise.all(
+      cart.products.map(async (product) => {
+        const pro = await productModel.findOne({ _id: product.productId });
+        if (!pro) {
+          throw new Error(`Product with ID ${product.productId} not found`);
+        }
+        return {
+          title: pro.title,
+          image: pro.image,
+          price: product.price,
+          quantity: product.quantity,
+        };
+      })
+    );
+
+    const order = await orderModel.create({
+      userId,
+      products: productList,
+      totalPrice: cart.totalPrice,
+      status: "pending",
+      address: address,
+    });
+
+    cart.totalPrice = 0;
+    cart.products = [];
+    cart.status = "complete";
+    await cart.save();
+
+    return order;
+  } catch (e) {
+    throw new Error(`Failed to checkout: ${e.message}`);
   }
 };

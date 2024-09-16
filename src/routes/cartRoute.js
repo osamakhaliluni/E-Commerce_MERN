@@ -1,8 +1,11 @@
 import express from "express";
 import {
-  addProduct,
+  addProductToCart,
   getActiveCart,
-  updateProduct,
+  updateProductInCart,
+  deleteProductInCart,
+  clearCart,
+  checkout,
 } from "../services/cartServices.js";
 import validateJWT from "../middlewares/validateJWT.js";
 
@@ -20,11 +23,27 @@ router.get("/", validateJWT, async (req, res) => {
   }
 });
 
+router.delete("/", validateJWT, async (req, res) => {
+  const userId = req.user._id.toString();
+  try {
+    const response = await clearCart({ userId });
+    return res.status(200).json(response);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+    return;
+  }
+});
+
 router.post("/items", validateJWT, async (req, res) => {
   const userId = req.user._id.toString();
   const { productId, quantity, price } = req.body;
   try {
-    const response = await addProduct({ userId, productId, quantity, price });
+    const response = await addProductToCart({
+      userId,
+      productId,
+      quantity,
+      price,
+    });
     res.status(201).json(response);
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -36,12 +55,34 @@ router.put("/items", validateJWT, async (req, res) => {
   const userId = req.user._id.toString();
   const { productId, quantity, price } = req.body;
   try {
-    const response = await updateProduct({
+    const response = await updateProductInCart({
       userId,
       productId,
       quantity,
       price,
     });
+    res.status(200).json(response);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+router.delete("/items/:productId", validateJWT, async (req, res) => {
+  const userId = req.user._id.toString();
+  const { productId } = req.params;
+  try {
+    const response = await deleteProductInCart({ userId, productId });
+    res.status(200).json(response);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+router.post("/checkout", validateJWT, async (req, res) => {
+  const userId = req.user._id.toString();
+  const { address } = req.body;
+  try {
+    const response = await checkout({ userId, address });
     res.status(200).json(response);
   } catch (err) {
     res.status(400).json({ message: err.message });
