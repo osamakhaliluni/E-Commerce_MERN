@@ -13,7 +13,6 @@ router.post("/register", async (req, res) => {
   } catch (error) {
     res.status(400).json({ error: error.message });
     console.error(error);
-    return; // Ensure the error is not swallowed by the catch block above. Otherwise, the client might not receive the error message.  // eslint-disable-line no-unreachable-code
   }
 });
 
