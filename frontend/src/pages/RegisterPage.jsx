@@ -2,6 +2,7 @@
 import { Container, Typography } from '@mui/material';
 import './registerstyle.css';
 import { useRef, useState } from 'react';
+import { useAuth } from '../context/Auth/AuthContext';
 
 const RegisterPage = () => {
     const nameRef = useRef();
@@ -9,10 +10,17 @@ const RegisterPage = () => {
     const passwordRef = useRef();
     const [error, setError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const { token, login } = useAuth();
     const onSubmit = async () => {
         const name = nameRef.current.value;
         const email = emailRef.current.value;
         const password = passwordRef.current.value;
+
+        if (!name || !email || !password) {
+            setError(true);
+            setErrorMessage('All fields are required');
+            return;
+        }
 
         try {
             const response = await fetch(`${import.meta.env.VITE_BASE_URL}/user/register`
@@ -32,7 +40,8 @@ const RegisterPage = () => {
                 throw new Error(`Error register: ${err}`);
             }
             const data = await response.json();
-            console.log(data);
+            login(name, data.token);
+            console.log(token);
         } catch (e) {
             console.error(e);
             setError(true);
