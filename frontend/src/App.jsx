@@ -3,9 +3,9 @@ import HomePage from './pages/HomePage';
 import Navbar from './components/Navbar';
 import RegisterPage from './pages/RegisterPage';
 import AuthProvider from './context/Auth/AuthProvider';
+import LoginPage from './pages/LoginPage';
 
 
-console.log(import.meta.env.VITE_BASE_URL);
 function App() {
 
   return (
@@ -15,6 +15,7 @@ function App() {
         <Routes>
           <Route path='/' element={<HomePage />} />
           <Route path='/register' element={<RegisterPage />} />
+          <Route path='/login' element={<LoginPage />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

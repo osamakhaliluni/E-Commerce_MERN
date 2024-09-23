@@ -7,14 +7,19 @@ input {
 .regBody {
     margin: 0;
     width: 100vw;
-    height: 80vh;
+    height: 100vh;
     display: flex;
+    position: absolute;
+    top: 0;
+    left: 0;
     align-items: center;
     text-align: center;
     justify-content: center;
     place-items: center;
     overflow: hidden;
+    background-color: white;
     font-family: poppins;
+    z-index: 10;
 }
 
 .container {
@@ -43,7 +48,7 @@ input {
 
 .regBody label,
 .regBody input,
-.regBody button {
+.regBody .btn {
     display: block;
     width: 100%;
     padding: 0;
@@ -74,7 +79,7 @@ input {
     box-shadow: inset 6px 6px 6px #cbced1, inset -6px -6px 6px white;
 }
 
-.regBody button {
+.regBody .btn {
     color: white;
     margin-top: 20px;
     background: #1DA1F2;
@@ -86,7 +91,7 @@ input {
     transition: 0.5s;
 }
 
-.regBody button:hover {
+.regBody .btn:hover {
     box-shadow: none;
 }
 
