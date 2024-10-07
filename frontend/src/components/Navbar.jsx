@@ -12,8 +12,9 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useAuth } from '../context/Auth/AuthContext';
-import { Grid } from '@mui/material';
+import { Badge, Grid } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 const pages = ['Products', 'Pricing', 'Blog'];
@@ -54,6 +55,10 @@ function Navbar() {
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
     };
+
+    const handleCartPage = () => {
+        navigate('/cart');
+    }
 
     return (
         <AppBar position="static">
@@ -144,9 +149,15 @@ function Navbar() {
                     </Box>
                     <Box sx={{ flexGrow: 0 }}>
                         {isAuthenticated ? <>
-
                             <Tooltip title="Open settings">
                                 <Grid container justifyContent="center" alignItems="center" gap={2}>
+                                    <Grid item>
+                                        <IconButton aria-label="cart" onClick={handleCartPage}>
+                                            <Badge badgeContent={4} color="secondary">
+                                                <ShoppingCartIcon htmlColor='white' />
+                                            </Badge>
+                                        </IconButton>
+                                    </Grid>
                                     <Grid item>
                                         <Typography>{email}</Typography>
                                     </Grid>

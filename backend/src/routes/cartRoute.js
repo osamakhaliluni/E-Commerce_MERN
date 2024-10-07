@@ -13,7 +13,6 @@ const router = express.Router();
 
 router.get("/", validateJWT, async (req, res) => {
   const userID = req.user._id.toString();
-  console.log(userID);
   try {
     const cart = await getActiveCart({ userId: userID });
     res.status(200).json(cart);

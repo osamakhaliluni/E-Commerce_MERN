@@ -11,11 +11,6 @@ export const register = async ({ email, name, password }) => {
     const hashPassword = await bcrypt.hash(password, 10);
     const newUser = new userModel({ email, name, password: hashPassword });
     await newUser.save();
-    console.log("Registration Data:", {
-      email: newUser.email,
-      name: newUser.name,
-      password: newUser.password,
-    });
     return generateJWT({
       email: newUser.email,
       name: newUser.name,
