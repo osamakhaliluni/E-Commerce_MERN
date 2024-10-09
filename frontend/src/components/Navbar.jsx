@@ -13,9 +13,11 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import StorefrontIcon from '@mui/icons-material/Storefront';
 import { useAuth } from '../context/Auth/AuthContext';
 import { Badge, Grid } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { useCart } from '../context/cart/CartContext';
 
 const pages = ['Products', 'Pricing', 'Blog'];
 const settings = ['Cart', 'Orders', 'Log Out',];
@@ -25,6 +27,7 @@ function Navbar() {
     const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
     const navigate = useNavigate();
+    const { cartItems } = useCart();
 
     const handleLogin = () => {
         navigate('/login');
@@ -64,24 +67,25 @@ function Navbar() {
         <AppBar position="static">
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
-                    <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
-                    <Typography
-                        variant="h6"
-                        noWrap
-                        component="a"
-                        href="#app-bar-with-responsive-menu"
-                        sx={{
-                            mr: 2,
-                            display: { xs: 'none', md: 'flex' },
-                            fontFamily: 'monospace',
-                            fontWeight: 700,
-                            letterSpacing: '.1rem',
-                            color: 'inherit',
-                            textDecoration: 'none',
-                        }}
-                    >
-                        E-COMMERCE APP
-                    </Typography>
+                    <Button variant='text' onClick={() => navigate('/')} sx={{ color: 'white' }}>
+                        <StorefrontIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+                        <Typography
+                            variant="h6"
+                            noWrap
+                            component="a"
+                            sx={{
+                                mr: 2,
+                                display: { xs: 'none', md: 'flex' },
+                                fontFamily: 'monospace',
+                                fontWeight: 700,
+                                letterSpacing: '.1rem',
+                                color: 'inherit',
+                                textDecoration: 'none',
+                            }}
+                        >
+                            E-COMMERCE APP
+                        </Typography>
+                    </Button>
 
                     <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
                         <IconButton
@@ -153,7 +157,7 @@ function Navbar() {
                                 <Grid container justifyContent="center" alignItems="center" gap={2}>
                                     <Grid item>
                                         <IconButton aria-label="cart" onClick={handleCartPage}>
-                                            <Badge badgeContent={4} color="secondary">
+                                            <Badge badgeContent={cartItems.length} color="secondary">
                                                 <ShoppingCartIcon htmlColor='white' />
                                             </Badge>
                                         </IconButton>

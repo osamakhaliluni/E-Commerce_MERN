@@ -1,5 +1,5 @@
 import { Box, Container, Grid } from "@mui/material";
-import ProductCard from "../components/productCArd";
+import ProductCard from "../components/productCard";
 import { useEffect, useState } from "react";
 import Alert from '@mui/material/Alert';
 

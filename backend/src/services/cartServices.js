@@ -18,7 +18,13 @@ export const getActiveCart = async ({ userId }) => {
     if (!cart) {
       cart = await createCart(userId);
     }
-    return cart;
+    var Products = [];
+    for (const p of cart.products) {
+      const product = await productModel.findById(p.productId);
+      Products.push(product);
+    }
+    console.log(Products);
+    return { cart: cart, products: Products };
   } catch (err) {
     throw err;
   }
