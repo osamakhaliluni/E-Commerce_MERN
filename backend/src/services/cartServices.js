@@ -18,13 +18,7 @@ export const getActiveCart = async ({ userId }) => {
     if (!cart) {
       cart = await createCart(userId);
     }
-    var Products = [];
-    for (const p of cart.products) {
-      const product = await productModel.findById(p.productId);
-      Products.push(product);
-    }
-    console.log(Products);
-    return { cart: cart, products: Products };
+    return cart;
   } catch (err) {
     throw err;
   }
@@ -63,6 +57,10 @@ export const addProductToCart = async ({
     cart.products.push({
       productId,
       quantity,
+      title: product.title,
+      image: product.image,
+      description: product.description,
+      category: product.category,
       price: price ? price : product.price,
     });
     cart.totalPrice += price * quantity;
@@ -89,7 +87,7 @@ export const updateProductInCart = async ({
     }
 
     const productIndex = cart.products.findIndex(
-      (p) => p.productId.toString() === productId.toString()
+      (p) => p.productId.toString() === productId
     );
 
     if (productIndex === -1) {
@@ -124,7 +122,7 @@ export const deleteProductInCart = async ({ productId, userId }) => {
   try {
     const cart = await getActiveCart({ userId });
     const productIndex = cart.products.findIndex(
-      (p) => p.productId.toString() === productId.toString()
+      (p) => p.productId.toString() === productId
     );
     if (productIndex === -1) {
       throw new Error("Product not found in the cart");

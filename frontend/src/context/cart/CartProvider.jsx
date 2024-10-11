@@ -32,7 +32,7 @@ const CartProvider = ({ children }) => {
                         }
                     });
                     setCartItems(cartItemsMapped);
-                    setTotalPrice(data.cart.totalPrice);
+                    setTotalPrice(data.totalPrice);
                 }
                 else {
                     throw new Error(`Failed to fetch cart:${response.status}`);
@@ -107,8 +107,82 @@ const CartProvider = ({ children }) => {
         }
     }
 
+    const updateItemInCart = async (productId, quantity) => {
+        if (!token) {
+            throw new Error("User not authenticated");
+        }
+        try {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/cart/items/`,
+                {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ productId, quantity }),
+                }
+            );
+            if (!response.ok) {
+                const errorMessage = await response.json();
+                throw new Error(`Error updating item in cart: ${errorMessage.message}`);
+            }
+            const data = await response.json();
+            const cartItemsMapped = data.products.map((product) => {
+                return {
+                    id: product.productId,
+                    title: product.title,
+                    price: product.price,
+                    quantity: product.quantity,
+                    image: product.image
+                }
+            });
+            setCartItems(cartItemsMapped);
+            setTotalPrice(data.totalPrice);
+        }
+        catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
+
+    const removeItemFromCart = async (productId) => {
+        if (!token) {
+            throw new Error("User not authenticated");
+        }
+        try {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/cart/items/${productId}`,
+                {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                }
+            );
+            if (!response.ok) {
+                const errorMessage = await response.json();
+                throw new Error(`Error removing item from cart: ${errorMessage.message}`);
+            }
+            const data = await response.json();
+            const cartItemsMapped = data.products.map((product) => {
+                return {
+                    id: product.productId,
+                    title: product.title,
+                    price: product.price,
+                    quantity: product.quantity,
+                    image: product.image
+                }
+            });
+            setCartItems(cartItemsMapped);
+            setTotalPrice(data.totalPrice);
+        }
+        catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
+
     return (
-        <CartContext.Provider value={{ cartItems, totalPrice, addItemToCart }}>
+        <CartContext.Provider value={{ cartItems, totalPrice, addItemToCart, updateItemInCart, removeItemFromCart }}>
             {children}
         </CartContext.Provider>
     )

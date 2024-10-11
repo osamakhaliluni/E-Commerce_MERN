@@ -1,41 +1,81 @@
 import { useCart } from "../context/cart/CartContext";
-import { Button, Card, CardActions, CardContent, CardMedia, Container, Grid, Typography } from "@mui/material";
+import { Alert, Box, Button, ButtonGroup, Container, Typography } from "@mui/material";
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import Avatar from '@mui/material/Avatar';
+import * as React from 'react';
 
 const CartPage = () => {
-    const { cartItems, totalPrice } = useCart();
+    const { cartItems, totalPrice, updateItemInCart, removeItemFromCart } = useCart();
+    const [error, setError] = React.useState("");
+
+    const clearErrorAfterDelay = () => {
+        setTimeout(() => {
+            setError(null);
+        }, 5000);  // Clears the error after 5 seconds
+    };
 
     return (
-        <Container>
-            <Typography variant="h3" textAlign={"center"} sx={{ mt: 2 }}>My Cart</Typography>
-            <Grid container spacing={2} sx={{ mt: 2 }}>
-                {cartItems.map((cartItem) => (
-                    <Grid item key={cartItem.id} md={4}>
-                        <Card>
-                            <CardMedia
-                                component="img"
-                                alt="product"
-                                height="200"
-                                image={cartItem.image}
-                            />
-                            <CardContent>
-                                <Typography gutterBottom variant="h5" component="div">
-                                    {cartItem.title}
-                                </Typography>
+        <Container sx={{ display: "flex", alignItems: "center", flexDirection: "column" }}>
+            {error ? <Alert severity="error">{error}</Alert> : null}
 
-                                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                                    EGP {cartItem.price}
-                                </Typography>
-                            </CardContent>
-                            <CardActions>
-                                <Button variant='contained' size="small">Delete From Cart</Button>
-                            </CardActions>
-                        </Card>
-                    </Grid>
-                ))}
-            </Grid>
+            <Typography variant="h3" textAlign={"center"} sx={{ mt: 2 }}>My Cart</Typography>
+            <List sx={{ width: '100%', maxWidth: 600 }}>
+                {cartItems.map((cartItem) => (
+                    <ListItem alignItems="flex-start" key={cartItem.id} sx={{
+                        marginTop: 2,
+                        borderWidth: 1,
+                        borderColor: "blue",
+                        borderStyle: "solid",
+                        borderRadius: 5
+                    }}>
+                        <ListItemAvatar>
+                            <Avatar sx={{ width: 60, height: 60, mr: 2 }} alt={cartItem.title} src={cartItem.image} />
+                        </ListItemAvatar>
+                        <ListItemText
+                            primary={cartItem.title}
+                            secondary={
+                                <React.Fragment>
+                                    <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
+                                        <Typography
+                                            component="span"
+                                            variant="body2"
+                                            sx={{ color: 'text.primary', display: 'inline' }}
+                                        >
+                                            {cartItem.price} EGP
+                                        </Typography>
+                                        {cartItem.quantity} items
+                                        <ButtonGroup variant="contained">
+                                            <Button onClick={async () => {
+                                                if (cartItem.quantity <= 1) { return; }
+                                                try {
+                                                    await updateItemInCart(cartItem.id, cartItem.quantity - 1)
+                                                } catch (e) {
+                                                    setError(e.message);
+                                                    clearErrorAfterDelay();
+                                                }
+                                            }}>-</Button>
+                                            <Button onClick={async () => {
+                                                try {
+                                                    await updateItemInCart(cartItem.id, cartItem.quantity + 1)
+                                                } catch (e) {
+                                                    setError(e.message);
+                                                    clearErrorAfterDelay();
+                                                }
+                                            }}>+</Button>
+                                        </ButtonGroup>
+                                    </Box>
+                                    <Button variant="outlined" onClick={() => { removeItemFromCart(cartItem.id) }}>Remove Item</Button>
+                                </React.Fragment>
+                            }
+                        />
+                    </ListItem>))}
+            </List>
             <Typography variant="h5" color="info" sx={{ mt: 3 }}>Total Price: {totalPrice}</Typography>
         </Container>
-    )
+    );
 }
 
 export default CartPage;
