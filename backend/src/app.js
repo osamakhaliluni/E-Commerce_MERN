@@ -7,6 +7,7 @@ import { initialize } from "./services/productServices.js";
 import productRoute from "../src/routes/productRoute.js";
 import cartRoute from "../src/routes/cartRoute.js";
 import cors from "cors";
+import path from "path";
 
 dotenv.config();
 
