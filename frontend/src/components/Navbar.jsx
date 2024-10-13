@@ -52,9 +52,14 @@ function Navbar() {
         }
         else if (key === 'Cart') {
             navigate('/cart');
+            handleCloseNavMenu();
+        }
+        else if (key === 'Orders') {
+            navigate('/my-orders');
+            handleCloseNavMenu();
         }
         else {
-            handleCloseUserMenu;
+            handleCloseUserMenu();
         }
     }
 

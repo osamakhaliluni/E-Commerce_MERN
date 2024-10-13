@@ -1,6 +1,7 @@
 import userModel from "../models/userModel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import orderModel from "../models/orderModel.js";
 
 export const register = async ({ email, name, password }) => {
   const findUser = await userModel.findOne({ email });
@@ -34,6 +35,15 @@ export const login = async ({ email, password }) => {
     return generateJWT({ email: user.email, password: user.password });
   } catch (e) {
     throw new Error(`Failed to login: ${e.message}`);
+  }
+};
+
+export const getMyOrders = async ({ userId }) => {
+  try {
+    const orders = await orderModel.find({ userId });
+    return orders;
+  } catch (error) {
+    throw new Error(`Failed to fetch orders: ${error.message}`);
   }
 };
 

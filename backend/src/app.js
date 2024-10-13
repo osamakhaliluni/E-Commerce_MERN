@@ -30,6 +30,10 @@ app.use("/products", productRoute);
 
 app.use("/cart", cartRoute);
 
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "frontend/dist", "index.html"));
+});
+
 initialize();
 
 app.listen(port, () => {
