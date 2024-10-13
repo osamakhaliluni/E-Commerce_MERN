@@ -6,10 +6,12 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 import * as React from 'react';
+import { useNavigate } from "react-router-dom";
 
 const CartPage = () => {
-    const { cartItems, totalPrice, updateItemInCart, removeItemFromCart } = useCart();
+    const { cartItems, totalPrice, updateItemInCart, removeItemFromCart, clearCart } = useCart();
     const [error, setError] = React.useState("");
+    const navigate = useNavigate();
 
     const clearErrorAfterDelay = () => {
         setTimeout(() => {
@@ -22,7 +24,8 @@ const CartPage = () => {
             {error ? <Alert severity="error">{error}</Alert> : null}
 
             <Typography variant="h3" textAlign={"center"} sx={{ mt: 2 }}>My Cart</Typography>
-            <List sx={{ width: '100%', maxWidth: 600 }}>
+            <Button variant="outlined" onClick={() => { clearCart() }}>Clear Cart</Button>
+            {cartItems.length ? <Box> <List sx={{ width: '100%', maxWidth: 600 }}>
                 {cartItems.map((cartItem) => (
                     <ListItem alignItems="flex-start" key={cartItem.id} sx={{
                         marginTop: 2,
@@ -73,7 +76,11 @@ const CartPage = () => {
                         />
                     </ListItem>))}
             </List>
-            <Typography variant="h5" color="info" sx={{ mt: 3 }}>Total Price: {totalPrice}</Typography>
+                <Box display={"flex"} flexDirection={"row"} justifyContent={"space-between"} alignItems={"center"} mt={2}>
+                    <Typography variant="h5" color="info" sx={{ mt: 3 }}>Total Price: {totalPrice} EGP</Typography>
+                    <Button variant="outlined" onClick={() => { navigate('/checkout') }}>CheckOut</Button>
+                </Box>
+            </Box> : <Typography>Your Cart is empty</Typography>}
         </Container>
     );
 }

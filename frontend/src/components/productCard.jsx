@@ -5,10 +5,14 @@ import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { useCart } from '../context/cart/CartContext';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/Auth/AuthContext';
 
 // eslint-disable-next-line react/prop-types
 export default function ProductCard({ _id, title, price, image, description }) {
     const { addItemToCart } = useCart();
+    const navigate = useNavigate();
+    const { token } = useAuth();
 
     return (
         <Card>
@@ -44,7 +48,7 @@ export default function ProductCard({ _id, title, price, image, description }) {
                 </Typography>
             </CardContent>
             <CardActions>
-                <Button variant='contained' onClick={() => { addItemToCart({ id: _id, title, price, image }) }} size="small">Add to Cart</Button>
+                <Button variant='contained' onClick={() => { if (!token) { navigate('/login'); return; } addItemToCart({ id: _id, title, price, image }) }} size="small">Add to Cart</Button>
             </CardActions>
         </Card>
     );

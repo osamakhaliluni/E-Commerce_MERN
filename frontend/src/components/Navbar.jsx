@@ -50,6 +50,9 @@ function Navbar() {
             navigate('/');
             handleCloseNavMenu();
         }
+        else if (key === 'Cart') {
+            navigate('/cart');
+        }
         else {
             handleCloseUserMenu;
         }
