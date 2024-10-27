@@ -14,7 +14,6 @@ const MyOrdersPage = () => {
     useEffect(() => {
         getMyOrders();
     }, []);
-    console.log(myOrders);
     return (
         <Container maxWidth={false} disableGutters={true} sx={{ display: "flex", alignItems: "center", flexDirection: "column", gap: 2, mt: 3, width: '100%' }}>
             {myOrders ?
